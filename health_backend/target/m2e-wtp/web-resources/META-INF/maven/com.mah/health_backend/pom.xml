@@ -8,6 +8,7 @@
   <artifactId>health_backend</artifactId>
   <packaging>war</packaging>
   <dependencies>
+  	
   	<dependency>
   		<groupId>com.mah</groupId>
   		<artifactId>health_interface</artifactId>
