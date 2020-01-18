@@ -3,12 +3,13 @@ package com.itheima.controller;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.itheima.constant.MessageConstant;
+import com.itheima.entity.PageResult;
+import com.itheima.entity.QueryPageBean;
+import com.itheima.entity.Result;
 import com.itheima.pojo.CheckItem;
 import com.itheima.service.CheckItemService;
 
-import entity.PageResult;
-import entity.QueryPageBean;
-import entity.Result;
+
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestBody;

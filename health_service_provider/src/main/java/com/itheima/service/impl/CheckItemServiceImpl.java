@@ -7,12 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.itheima.entity.PageResult;
+import com.itheima.entity.QueryPageBean;
 import com.itheima.mapper.CheckItemMapper;
 import com.itheima.pojo.CheckItem;
 import com.itheima.service.CheckItemService;
 
-import entity.PageResult;
-import entity.QueryPageBean;
+
 
 @Service
 public class CheckItemServiceImpl implements CheckItemService{

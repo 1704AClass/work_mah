@@ -9,12 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.itheima.entity.PageResult;
+import com.itheima.entity.QueryPageBean;
 import com.itheima.mapper.CheckGroupMapper;
 import com.itheima.pojo.CheckGroup;
 import com.itheima.service.CheckGroupService;
 
-import entity.PageResult;
-import entity.QueryPageBean;
+
 
 @Service
 public class CheckGroupServiceImpl implements CheckGroupService{

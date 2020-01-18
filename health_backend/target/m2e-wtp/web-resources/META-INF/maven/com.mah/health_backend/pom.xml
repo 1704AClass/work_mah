@@ -15,6 +15,11 @@
   	</dependency>
   	<dependency>
   		<groupId>com.mah</groupId>
+  		<artifactId>health_common</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>com.mah</groupId>
   		<artifactId>health_pojo</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
@@ -27,7 +32,7 @@
 			<version>2.2</version>
 			<configuration>
 				<!-- 指定端口 -->
-				<port>82</port>
+				<port>9101</port>
 				<!-- 请求路径 -->
 				<path>/</path>
 			</configuration>
