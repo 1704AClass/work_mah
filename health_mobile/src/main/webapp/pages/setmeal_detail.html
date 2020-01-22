@@ -39,13 +39,6 @@
                     <span>{{setmeal.age}}</span>
                 </p>
             </div>
-            <!--<div class="project-know">
-                <a href="orderNotice.html" class="link-page">
-                    <i class="icon-ask-circle"><span class="path1"></span><span class="path2"></span></i>
-                    <span class="word">预约须知</span>
-                    <span class="arrow"><i class="icon-rit-arrow"></i></span>
-                </a>
-            </div>-->
         </div>
         <div class="table-listbox">
             <div class="box-title">
@@ -91,10 +84,10 @@
             }
         },
         mounted(){
-            axios.post("/setmeal/findById.do?id=" + id).then((response) => {
+            axios.post("/setmeal/findByid.do?id=" + id).then((response) => {
                 if(response.data.flag){
                     this.setmeal = response.data.data;
-                    this.imgUrl = 'http://pqjroc654.bkt.clouddn.com/' + this.setmeal.img;
+                    this.imgUrl = this.setmeal.img;
                 }
             });
         }

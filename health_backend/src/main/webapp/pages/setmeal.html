@@ -95,8 +95,8 @@
                         <el-table-column prop="remark" label="说明" align="center"></el-table-column>
                         <el-table-column label="操作" align="center">
                             <template slot-scope="scope">
-                                <el-button type="primary" size="mini">编辑</el-button>
-                                <el-button size="mini" type="danger">删除</el-button>
+                                <el-button type="primary" size="mini" @click="handleUpdate(scope.row)">编辑</el-button>
+                                <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -250,8 +250,68 @@
                 this.findPage();
             },
             methods: {
+            	// 删除
+                handleDelete(row) {
+                	this.$confirm("确认删除当前选中记录吗？","提示",{type:'warning'}).then(()=>{
+                        //用户点击确定按钮，发送ajax请求将id发送后台
+                        axios.post("/setmeal/delete.do?id="+row.id).then((res)=>{
+                            if(res.data.flag){
+                                //弹出成功提示信息
+                                this.$message({
+                                    type:"success",
+                                    message:res.data.message
+                                })
+                                //重新执行查询请求
+                                this.findPage();
+                            }else{
+                                //执行失败
+                                this.$message.error(res.data.message);
+                            }
+                        }).catch((r)=>{
+                            this.showMessage(r);//删除异常情况调用showMessage
+                        })
+                    }).catch(()=>{
+                        // alert("用户点击取消按钮了")
+                        this.$message({
+                            type:"info",
+                            message:"操作已取消"
+                        })
+                    })
+                },
+            	// 弹出编辑窗口
+                handleUpdate(row) {
+                	//回显
+                	axios.get("/setmeal/findById.do?id=" + row.id).then((res)=>{
+                        if(res.data.flag){
+                            //设置编辑窗口属性
+                            this.activeName="first";
+                            this.dialogFormVisible = true;
+                            //VUE双向数据绑定回显到页面
+                            this.formData = res.data.data;
+                            this.imageUrl = res.data.data.img;
+                        }else{
+                            this.$message.error("获取数据失败，请刷新当前页面");
+                        }
+                    });
+                	//后台调动检查项列表
+                	axios.get("/checkgroup/findAll.do").then((req)=>{
+                		this.tableData=req.data.data;
+                		//复选框回显
+                		axios.get("/setmeal/findSetmealIdAndCheckGroupId.do?id="+row.id).then((req)=>{
+                			//复选框回显
+                			this.checkgroupIds=req.data.data;
+                		});
+                	});
+                },
                 //文件上传成功后的钩子，response为服务端返回的值，file为当前上传的文件封装成的js对象
                 handleAvatarSuccess(response, file) {
+                	/* this.imageUrl = "http://pvpusceil.bkt.clouddn.com/" + response.data; */
+                	this.imageUrl = response.data;
+                	this.$message({
+                        message: response.message,
+                        type: response.flag ? 'success' : 'error'
+                    });
+                	this.formData.img = response.data;
                 },
                 //上传图片之前执行
                 beforeAvatarUpload(file) {
@@ -265,20 +325,40 @@
 				  }
 				  return isJPG && isLt2M;
                 },
-                //添加
+                //添加与编辑
                 handleAdd () {
-                	axios.post("/setmeal/add.do?checkItemId="+this.checkitemIds,this.formData).then((req)=>{
-                		this.dialogFormVisible=false;
-                		if(req.data.flag){
-                			this.$message({
-                                message: req.data.message,
-                                type: 'success'
-                            });
-                			this.findPage();
-                		}else{
-                			this.$message.error(req.data.message);
-                		}
-                    });
+                	if(this.formData.id !=null){
+                		axios.post("/setmeal/edit.do?checkGroupId="+this.checkgroupIds,this.formData).then((response)=> {
+                            //隐藏编辑窗口
+                            this.dialogFormVisible = false;
+                            if(response.data.flag){
+                                //编辑成功，弹出成功提示信息
+                                this.$message({
+                                    message: response.data.message,
+                                    type: 'success'
+                                });
+                            }else{
+                                //编辑失败，弹出错误提示信息
+                                this.$message.error(response.data.message);
+                            }
+                        }).finally(()=> {
+                            //重新发送请求查询分页数据
+                            this.findPage();
+                        });
+                	}else{
+                		axios.post("/setmeal/add.do?checkGroupId="+this.checkgroupIds,this.formData).then((req)=>{
+                    		this.dialogFormVisible=false;
+                    		if(req.data.flag){
+                    			this.$message({
+                                    message: req.data.message,
+                                    type: 'success'
+                                });
+                    			this.findPage();
+                    		}else{
+                    			this.$message.error(req.data.message);
+                    		}
+                        });
+                	}
                 },
                 //分页查询
                 findPage() {
@@ -288,6 +368,7 @@
                         pageSize: this.pagination.pageSize, //每页显示记录数
                         queryString: this.pagination.queryString //查询条件
                     };
+                	//后台访问列表
                     axios.post("/setmeal/findPage.do",param).then((res)=>{
                         this.dataList = res.data.rows;
                         this.pagination.total = res.data.total;
@@ -306,9 +387,9 @@
                 	//默认让基本信息显示第一
                 	this.activeName="first";
                 	//对多选框进行重置
-                	this.checkitemIds=[];
+                	this.checkgroupIds=[];
                 	//后台调动检查项列表
-                	axios.get("/setmeal/findAll.do").then((req)=>{
+                	axios.get("/checkgroup/findAll.do").then((req)=>{
                 		this.tableData=req.data.data;
                 	});
                 },
@@ -316,7 +397,7 @@
                 handleCurrentChange(currentPage) {
                 	this.pagination.currentPage=currentPage;
                 	this.findPage();
-                },
+                }
             }
         })
     </script>

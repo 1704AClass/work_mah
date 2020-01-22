@@ -7,15 +7,10 @@
   </parent>
   <artifactId>health_mobile</artifactId>
   <packaging>war</packaging>
-   <dependencies>
- 	<dependency>
-  		<groupId>com.mah</groupId>
-  		<artifactId>health_interface</artifactId>
-  		<version>0.0.1-SNAPSHOT</version>
-  	</dependency>
+    <dependencies>
   	<dependency>
   		<groupId>com.mah</groupId>
-  		<artifactId>health_common</artifactId>
+  		<artifactId>health_interface</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
   	<dependency>
@@ -23,6 +18,10 @@
   		<artifactId>health_pojo</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>servlet-api</artifactId>
+	</dependency>
   </dependencies>
   <build>  
 	<plugins>	     
@@ -32,7 +31,7 @@
 			<version>2.2</version>
 			<configuration>
 				<!-- 指定端口 -->
-				<port>9102</port>
+				<port>9012</port>
 				<!-- 请求路径 -->
 				<path>/</path>
 			</configuration>

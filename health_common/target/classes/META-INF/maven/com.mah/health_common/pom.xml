@@ -7,7 +7,16 @@
   </parent>
   <artifactId>health_common</artifactId>
   <dependencies>
-  	
+  	<dependency>
+         <groupId>com.aliyun</groupId>
+         <artifactId>aliyun-java-sdk-core</artifactId>
+         <version>4.0.8</version>
+    </dependency>
+    <dependency>
+         <groupId>com.aliyun</groupId>
+         <artifactId>aliyun-java-sdk-dysmsapi</artifactId>
+         <version>1.1.0</version>
+    </dependency>
   	<dependency>
   		<groupId>com.github.pagehelper</groupId>
   		<artifactId>pagehelper</artifactId>
@@ -137,6 +146,18 @@
 	<dependency>
 		<groupId>org.springframework.security</groupId>
 		<artifactId>spring-security-taglibs</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.quartz-scheduler</groupId>
+		<artifactId>quartz</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.quartz-scheduler</groupId>
+		<artifactId>quartz-jobs</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>javax.servlet</groupId>
+		<artifactId>servlet-api</artifactId>
 	</dependency>
   </dependencies>
 </project>

@@ -4,26 +4,71 @@
  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
  
  <mapper namespace="com.itheima.mapper.SetmealMapper">
+ 	<select id="findSetmealCount" resultType="map">
+ 		select s.name,count(o.id) as value from t_order o ,t_setmeal s where o.setmeal_id = s.id group by s.name
+ 	</select>
+ 	<!-- 查询列表 -->
  	<select id="pageQuery" resultType="com.itheima.pojo.Setmeal" parameterType="String">
  		select * from t_setmeal
- 		<if test="value !=null and value.length>0">
- 			where code = #{value} or name=#{value}
+ 		<if test="value !=null and value!='' and value.length > 0">
+ 			where code = #{value} or name = #{value} or helpCode = #{value}
  		</if>
  	</select>
+ 	<!-- 重新增加中间表 -->
+ 	<insert id="updateCheckGroupIdAndSetmealId" parameterType="map">
+ 		insert into t_setmeal_checkgroup set setmeal_id=#{setMealId},checkgroup_id=#{checkgroupId}
+ 	</insert>
+ 	<!-- 新增 -->
  	<insert id="add" parameterType="com.itheima.pojo.Setmeal">
+ 		<!-- 用mybatis返回一个自增id -->
  		<selectKey resultType="java.lang.Integer" order="AFTER" keyProperty="id">
  			SELECT LAST_INSERT_ID()
  		</selectKey>
- 		insert into t_setmeal
-       		(code,name,sex,age,helpCode,price,remark,attention,img)      
-         		values         
-       		(#{code},#{name},#{sex},#{age},#{helpCode},#{price},#
-{remark},#{attention},#{img})
-    </insert>
-	<insert id="setSetmealAndCheckGroup" parameterType="hashmap">
-		insert into t_setmeal_checkgroup
-       		(setmeal_id,checkgroup_id)       
-       			values          
-       		(#{setmeal_id},#{checkgroup_id})
-	</insert>
+ 		insert into t_setmeal set age=#{age},price=#{price},img=#{img},code=#{code},name=#{name},helpCode=#{helpCode},remark=#{remark},attention=#{attention}
+ 	</insert>
+ 	<!-- 修改时删除中间表 -->
+ 	<delete id="delsCheckGroupIdAndSetmealId" parameterType="int">
+ 		delete from t_setmeal_checkgroup where setmeal_id=#{id}
+ 	</delete>
+ 	<!-- 单删除 -->
+ 	<delete id="dels" parameterType="Integer">
+ 		delete from t_setmeal where id=#{id}
+ 	</delete>
+ 	<!-- 封装多对多的表关系 -->
+ 	<resultMap type="com.itheima.pojo.Setmeal" id="baseResultMap">
+		<id column="id" property="id"/>
+		<result column="name" property="name"/>
+		<result column="code" property="code"/>
+		<result column="helpCode" property="helpCode"/>
+		<result column="sex" property="sex"/>
+		<result column="age" property="age"/>
+		<result column="price" property="price"/>
+		<result column="remark" property="remark"/>
+		<result column="attention" property="attention"/>
+		<result column="img" property="img"/>
+	</resultMap>
+	<resultMap type="com.itheima.pojo.Setmeal" id="findByIdResultMap" extends="baseResultMap">
+		<collection property="checkGroups"
+					javaType="ArrayList"
+					ofType="com.itheima.pojo.CheckGroup"
+					column="id"
+					select="com.itheima.mapper.CheckGroupMapper.findCheckGroupById">
+		</collection>
+	</resultMap>
+	<!-- 用mybatis查询多对多 -->
+ 	<select id="findByid"  resultMap="findByIdResultMap">
+ 		select * from t_setmeal where id=#{id}
+ 	</select>
+ 	<!-- 回显使用 -->
+ 	<select id="findById" parameterType="Integer" resultType="com.itheima.pojo.Setmeal">
+ 		select * from t_setmeal where id=#{id}
+ 	</select>
+ 	<!-- 查询中间表-->
+ 	<select id="findSetmealIdAndCheckGroupId" parameterType="int" resultType="int">
+ 		select checkgroup_id from t_setmeal_checkgroup where setmeal_id=#{id}
+ 	</select>
+ 	<!-- 修改-->
+ 	<update id="edit" parameterType="com.itheima.pojo.CheckGroup">
+ 		update t_setmeal set age=#{age},price=#{price},img=#{img},code=#{code},name=#{name},helpCode=#{helpCode},remark=#{remark},attention=#{attention} where id=#{id}
+ 	</update>
  </mapper>

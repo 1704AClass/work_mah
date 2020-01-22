@@ -6,4 +6,10 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>health_pojo</artifactId>
+  <dependencies>
+  	<dependency> 
+		<groupId>com.qiniu</groupId> 
+		<artifactId>qiniu-java-sdk</artifactId> 
+	</dependency>
+  </dependencies>
 </project>

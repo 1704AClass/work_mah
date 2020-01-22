@@ -84,7 +84,6 @@
                                         <!-- 当前月 -->
                                         <div class="everyday" v-if="dayobject.day.getMonth()+1 == currentMonth">
                                             <span class="datenumber">{{ dayobject.day.getDate()}}</span>
-                                            
 											<template>
                                                 <template v-for="obj in leftobj">
                                                     <template v-if="obj.date == dayobject.day.getDate()">
@@ -103,9 +102,8 @@
                                                         </template>
                                                     </template>
                                                 </template>
-                                                <button v-if="dayobject.day > today" @click="handleOrderSet(dayobject.day)" class="orderbtn">设置</button>
+                                                <button v-if="dayobject.day < today" @click="handleOrderSet(dayobject.day)" class="orderbtn">设置</button>
                                             </template>
-											
                                         </div>
                                     </template>
                                 </li>
@@ -140,6 +138,29 @@
             methods: {
 				//预约设置
                 handleOrderSet(day){
+					this.$prompt('请输入预约人数','预约设置',{
+						confirmButtonText:'确定',
+						cancelButtonText:'取消',
+						inputPattern:/^[0-9]*[1-9][0-9]*$/,
+						inputErrorMessage: '只能输入正整数'
+					}).then(({value}) => {
+						axios.post("/ordersetting/editNumberByDate.do",{orderDate:this.formatDate(day.getFullYear(),day.getMonth()+1,day.getDate()),number:value}).then((response)=>{
+							if(response.data.flag){
+								this.initData(this.formatDate(day.getFullYear(), day.getMonth() +1, 1));
+								this.$message({
+									type: 'success',
+									message: response.data.message
+								});
+							}else{
+								this.$message.error(response.data.message);
+							}
+						});
+					}).catch(() => {
+						this.$message({
+							type: 'info',
+							message: '已取消'
+						});
+					});
                 },
 				//上传之前进行文件格式校验
                 beforeUpload(file){
@@ -168,7 +189,6 @@
                     }else{
                         this.$message.error(response.message);
                     }
-                    console.log(response, file, fileList);
                 },
                 //初始化当前页要展示的日期
 				initData: function (cur) {
@@ -193,7 +213,6 @@
                     }
                     var str = this.formatDate(this.currentYear, this.currentMonth, this.currentDay);
                     this.days.length = 0;
-                    // 今天是周日，放在第一行第7个位置，前面6个
                     //初始化本周
                     for (var i = this.currentWeek - 1; i >= 0; i--) {
                         var d = new Date(str);
@@ -212,7 +231,7 @@
                     for (var i = 1; i <= 35 - this.currentWeek; i++) {
                         var d = new Date(str);
                         d.setDate(d.getDate() + i);
-                        var dayobject = {};//dayobject   {day:date,index:2}
+                        var dayobject = {};
                         dayobject.day = d;
                         var now = new Date();
                         if (d.getDate() === (now.getDate()) && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
@@ -220,16 +239,20 @@
                         }
                         else if (index != 0 && index < 3)
                             dayobject.index = index++;
-                        this.days.push(dayobject);
+                            this.days.push(dayobject);
                     }
-                    
-                    /*this.leftobj = [
-                        { date: 1, number: 120, reservations: 1 },
-                        { date: 3, number: 120, reservations: 1 },
-                        { date: 4, number: 120, reservations: 120 },
-                        { date: 6, number: 120, reservations: 1 },
-                        { date: 8, number: 120, reservations: 1 }
-                    ];*/
+                    axios.post("/ordersetting/getOrderSettingByMonth.do?date="+this.currentYear+'-'+this.currentMonth).then((response)=>{
+                    	if(response.data.flag){
+                    		//为模型数据赋值，通过双向绑定展示到日历中
+                    		this.leftobj = response.data.data;
+                    		this.$message({
+                                message: response.data.message,
+                                type: 'success'
+                            });
+                    	}else{
+                    		this.$message.error(response.data.message);
+                    	}
+					});
                 },
 				//切换到当前月份
                 goCurrentMonth: function (year, month) {
@@ -238,9 +261,6 @@
                 },
 				//向前一个月
                 pickPre: function (year, month) {
-                    // setDate(0); 上月最后一天
-                    // setDate(-1); 上月倒数第二天
-                    // setDate(dx) 参数dx为 上月最后一天的前后dx天
                     var d = new Date(this.formatDate(year, month, 1));
                     d.setDate(0);
                     this.initData(this.formatDate(d.getFullYear(), d.getMonth() + 1, 1));

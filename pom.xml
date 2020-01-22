@@ -257,5 +257,6 @@
   	<module>health_pojo</module>
   	<module>health_dao</module>
   	<module>health_mobile</module>
+  	<module>health_jobs</module>
   </modules>
 </project>
